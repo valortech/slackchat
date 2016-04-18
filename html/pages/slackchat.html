@@ -1,0 +1,28 @@
+<link rel="stylesheet" href="/plugins/slackchat/css/themes.css">
+<link rel="stylesheet" href="/plugins/slackchat/css/style.css">
+
+<script src="/plugins/slackchat/js/index.js"></script>
+<script src="/plugins/slackchat/js/templates.js"></script>
+<script src="/plugins/slackchat/js/app.js"></script>
+
+<div id="p_slackchat_page" ng-controller="Shell as vm">
+    <div class="chat-container">
+        <valortech-slack-chat
+                messages="vm.messages"
+                username="vm.username"
+                input-placeholder-text="You can write here"
+                submit-button-text="Send your message"
+                title="Slack Chat"
+                theme="material"
+                submit-function="vm.sendMessage"
+                visible="true">
+        </valortech-slack-chat>
+    </div>
+</div>
+
+<script>
+    var slackChatNode = jQuery('#p_slackchat_page');
+    console.log("Bootstrapping slackChatNode");
+    angular.bootstrap(slackChatNode, ['slackChatApp']);
+    console.log("Finished bootstrapping slackChatNode");
+</script>

@@ -1,0 +1,10 @@
+{
+    "pluginVersion": 1,
+    "name": "slackchat",
+    "myVersion": "1.0.0.0",
+    "shortDescription": "Slack Chat Plugin for NXT",
+    "infoUrl": "https://github.com/valortech/slackchat",
+    "startPage": "p_slackchat",
+    "nrsVersion": "1.8.1",
+    "deactivated": false
+}
