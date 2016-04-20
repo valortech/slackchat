@@ -1,11 +1,18 @@
 <link rel="stylesheet" href="/plugins/slackchat/css/themes.css">
 <link rel="stylesheet" href="/plugins/slackchat/css/style.css">
+<link rel="stylesheet" href="/plugins/common_components/bower_components/font-awesome/css/font-awesome.css">
+<link rel="stylesheet" href="/plugins/common_components/bower_components/bootstrap/dist/css/bootstrap.min.css">
+<script src="/plugins/common_components/bower_components/lodash/dist/lodash.js"></script>
+<script src="/plugins/common_components/bower_components/jquery/dist/jquery.js"></script>
+<script src="/plugins/common_components/bower_components/angular/angular.js"></script>
+<script src="/plugins/slackchat/js/services/slackapi-angularjs/src/deg.slackapi.module.js"></script>
+<script src="/plugins/slackchat/js/services/slackapi-angularjs/src/deg.slackapi.services.js"></script>
 
 <script src="/plugins/slackchat/js/index.js"></script>
 <script src="/plugins/slackchat/js/templates.js"></script>
 <script src="/plugins/slackchat/js/app.js"></script>
 
-<div id="p_slackchat_page" ng-controller="Shell as vm">
+<div id="p_slackchat_page" ng-controller="SlackCtrl as vm">
     <div class="chat-container">
         <valortech-slack-chat
                 messages="vm.messages"
