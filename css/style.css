@@ -51,8 +51,10 @@
 .msg-container-base {
   background: #e5e5e5;
   margin: 0;
-  height: calc(100% - 140px);
-  overflow-x: hidden;
+  /*height: calc(100% - 140px);*/
+  height: 40%;
+  /*overflow-x: hidden;*/
+  overflow: scroll;
   padding: 0 10px 10px;
 }
 
@@ -103,12 +105,12 @@
 
 .chat-msg.chat-msg-receive {
   margin-right: 0;
-  padding-bottom: 20px;
+  padding-bottom: 10px;
 }
 
 .chat-msg.chat-msg-sent {
   margin-right: 0;
-  padding-bottom: 20px;
+  padding-bottom: 10px;
 }
 
 .chat-msg.chat-msg-sent .chat-msg-author {
@@ -131,8 +133,8 @@ html, body{
 */
 
 .chat-container {
-  width: 400px;
-  height: 100%;
+  width: 480px;
+  height: 40%;
   margin: 0 auto;
 }
 

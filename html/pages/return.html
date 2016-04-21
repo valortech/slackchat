@@ -17,8 +17,14 @@
     }
     var vars = getUrlVars();
     console.log("vars: ",vars);
-    localStorage.setItem("slack.token",vars.code);
-
+    if(vars.code) {
+        localStorage.setItem("slack.temp_token",vars.code);
+    }else{
+        window.alert("Something went wrong in the authentication process, please try again!");
+    }
+    window.setTimeout(function(){
+        window.location.assign("http://localhost:7876");
+    },10000);
 </script>
     Thank you.  You will be returned to the main page to log into NXT again.
 

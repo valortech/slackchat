@@ -12,7 +12,7 @@
                 team : "nxtchat",
                 state : NRS.accountRS,
                 redirect_uri : "http://localhost:7876/plugins/slackchat/html/pages/return.html",
-                scope : "identify channels:read files:read channels:write"
+                scope : "identify read post client"
             }
         };
 
@@ -23,59 +23,124 @@
             }
         ];
 
+        function onPostMessageResultCB(result){
+            console.log("Result: ",result);
+        }
         vm.onmessage = function(message){
             vm.messages.push({
                 'username' : message.user,
                 'content' : message.text
             });
         };
-        vm.sendMessage = function(message, username) {
-            if(message && message !== '' && username) {
-                vm.messages.push({
-                    'username': username,
-                    'content': message
-                });
-                slackSvc.chat.postMessage($scope,$scope.channelId,message,$scope.token);
+        vm.sendMessage = function(message,username) {
+            console.log("sending: ",message);
+            if(message) {
+                console.log("Channel is ",$scope.channelId);
+                slackSvc.chat.postMessage($scope.channelId,message,onPostMessageResultCB,$scope.access_token);
             }
         };
 
+        $scope.userById = function(id){
+            for(var user of $scope.users){
+                if(user.id == id){
+                    return user;
+                }
+            }
+            return null;
+        };
         vm.onRTMStart = function(msg){
+            console.log("onRTMStart.msg: ",msg);
             var url = msg.url;
+            $scope.users = msg.users;
+            $scope.channels = msg.channels;
             $scope.socket = new WebSocket(url);
             $scope.socket.onopen = function(event){
+                console.log("onopen.event: ",event);
                 if(!event.error) {
-                    vm.messages.push({'username': 'Welcome Bot', 'content': 'Successfully logged in'});
+                    vm.messages.push({'username': 'Welcome Bot', 'content': 'Connecting...'});
                 }else{
                     console.error("Error connecting: ",event);
                 }
             };
 
-            $scope.socket.onmessage = function(msg){
-                var data = JSON.parse(msg);
-                if(data.type == "message"){
-                    vm.messages.push({'username': data.user, 'content': data.text});
-                }else{
-                    console.warn("Unhandled Message Type: ",data);
+            $scope.socket.onmessage = function(event){
+                var data = JSON.parse(event.data);
+                console.log("onmessage.event: ",data);
+
+                var msg = {};
+                if(data.user){
+                    var user = $scope.userById(data.user);
+                    if(user) {
+                        msg.username = user.name;
+                    }else{
+                        msg.username = data.user;
+                    }
+                }
+                if(data.channel){
+                    $scope.channelId = data.channel;
+                }
+                switch(data.type){
+                    case "hello" :
+                        msg.content= "Connected";
+                    break;
+                    case "presence_change" :
+                         if(data.presence == "active"){
+                             msg.content = "Joined"
+                         }else{
+                             msg.content = "Left"
+                         }
+                    break;
+                    case "message" :
+                        msg.content = data.text;
+                    break;
+
+                    default:
+                        console.warn("Unhandled Message Type: ",data);
+                    break;
+
+                }
+                if(msg.username && msg.content){
+                    $scope.$apply(function(){
+                        console.log("Adding: ",msg);
+                        //var msgs = vm.messages;
+                        //msgs.push(msg);
+                        vm.messages.push(msg);
+                        console.log("There are "+vm.messages.length+" messages");
+                    });
                 }
             }
         };
 
-        var token = localStorage.getItem("slack.token");
-        if(!token){
-            slackSvc.authorize(config.client,config.authParams);
-        }else{
-            console.log("Authing: ",NRS.accountRS);
-            slackSvc.oauth.access(clientId, clientSecret,token , function (response) {
+        //localStorage.removeItem("slack.access_token");
+        //localStorage.removeItem("slack.temp_token");
+        var access_token = localStorage.getItem("slack.access_token");
+        var temp_token = localStorage.getItem("slack.temp_token");
+
+        if(temp_token){
+            slackSvc.oauth.access(clientId, clientSecret,temp_token, function (response) {
                 if(response.ok){
                     //optional : preload you token for further requests
-                    slackSvc.InitToken(response.access_token);
-                    slackSvc.rtm.start(response.access_token,vm.onRTMStart);
+                    localStorage.setItem("slack.access_token", response.access_token);
+                    access_token = response.access_token;
                 }else{
                     console.log("Error in slack auth: ",response);
                 }
+                localStorage.removeItem("slack.temp_token");
+                console.log("Authing: ", NRS.accountRS);
+                $scope.access_token = access_token;
+                slackSvc.InitToken(access_token);
+                slackSvc.rtm.start(access_token, vm.onRTMStart);
             });
+        }else {
+            if (access_token) {
+                $scope.access_token = access_token;
+                console.log("Authing: ", NRS.accountRS);
+                slackSvc.InitToken(access_token);
+                slackSvc.rtm.start(access_token, vm.onRTMStart);
+            } else if (!access_token && !temp_token) {
+                slackSvc.authorize(config.client, config.authParams);
+            }
         }
-
     }
     angular.module('slackChatApp', [
         'Deg.SlackApi',
