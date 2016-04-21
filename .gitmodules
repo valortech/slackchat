@@ -1,0 +1,3 @@
+[submodule "js/services/slackapi-angularjs"]
+	path = js/services/slackapi-angularjs
+	url = https://github.com/valortech/slackapi-angularjs.git
