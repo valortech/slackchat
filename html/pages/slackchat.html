@@ -19,6 +19,7 @@
 <div id="p_slackchat_page" ng-controller="SlackCtrl as vm">
     <div class="chat-container">
         <valortech-slack-chat
+                channels="vm.channels"
                 messages="vm.messages"
                 username="vm.username"
                 input-placeholder-text="You can write here"
